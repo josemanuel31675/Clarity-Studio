@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const placeholderText = document.querySelector('.placeholder-text');
     const processBtn = document.getElementById('process-btn');
     const loader = document.getElementById('loader');
+    const widthInput = document.getElementById('width-input');
+    const heightInput = document.getElementById('height-input');
     
     let selectedFile = null;
 
@@ -43,6 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedFile = file;
         const reader = new FileReader();
         reader.onload = (e) => {
+            // Once the preview image loads, we capture its natural dimensions
+            imagePreview.onload = () => {
+                widthInput.value = imagePreview.naturalWidth;
+                heightInput.value = imagePreview.naturalHeight;
+            };
             imagePreview.src = e.target.result;
             imagePreview.style.display = 'block';
             placeholderText.style.display = 'none';
@@ -54,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     processBtn.addEventListener('click', async () => {
         if (!selectedFile) return;
 
-        const width = document.getElementById('width-input').value;
-        const height = document.getElementById('height-input').value;
+        const width = widthInput.value;
+        const height = heightInput.value;
         const removeBg = document.getElementById('remove-bg-checkbox').checked;
 
         const formData = new FormData();
