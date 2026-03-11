@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity Studio | Image Tool</title>
+    <meta name="description" content="Herramienta profesional para redimensionar logos y eliminar fondos con IA.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Clarity Studio</h1>
+            <p class="subtitle">Herramienta inteligente para logos y transparencia</p>
+        </header>
+
+        <main class="main-card">
+            <section class="upload-section">
+                <div class="drop-zone" id="drop-zone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Arrastra tu logo aquí o haz clic para subir</p>
+                    <input type="file" id="file-input" hidden accept="image/*">
+                </div>
+
+                <div class="controls">
+                    <div class="input-group">
+                        <label>Dimensiones (Píxeles)</label>
+                        <div class="dimension-inputs">
+                            <input type="number" id="width-input" placeholder="Ancho">
+                            <input type="number" id="height-input" placeholder="Alto">
+                        </div>
+                    </div>
+
+                    <label class="toggle-group">
+                        <input type="checkbox" id="remove-bg-checkbox" checked>
+                        <span>Retirar fondo blanco / transparencia IA</span>
+                    </label>
+
+                    <button class="btn-process" id="process-btn" disabled>
+                        Procesar y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <section class="preview-section" id="preview-section">
+                <span class="loader" id="loader"></span>
+                <div class="placeholder-text">
+                    <i class="fa-solid fa-image" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    <p>Vista previa del logo</p>
+                </div>
+                <img id="image-preview" src="" alt="Vista previa">
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
