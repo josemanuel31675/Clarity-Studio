@@ -55,10 +55,13 @@ Para poner Clarity Studio online:
    - **Environment**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `gunicorn app:app`
-4. En la pestaña **Environment**, asegúrate de que el puerto se asigne automáticamente (Render lo hace por defecto).
+4. En la pestaña **Environment**, pulsa **Add Environment Variable**:
+   - **Key**: `PYTHON_VERSION`
+   - **Value**: `3.11.0`
+5. Asegúrate de que el puerto se asigne automáticamente (Render lo hace por defecto).
 
 > [!IMPORTANT]
-> Debido a que la IA utiliza modelos de procesamiento, el primer arranque puede tardar un poco mientras se configuran las dependencias.
+> Debido a que la IA utiliza modelos de procesamiento, el primer arranque puede tardar un poco mientras se configuran las dependencias. Si ves errores de construcción ("Build failed"), asegúrate de haber configurado la versión de Python a `3.11.0` en la pestaña Environment de Render.
 
 ---
 Desarrollado con ❤️ para Clarity Studio.
