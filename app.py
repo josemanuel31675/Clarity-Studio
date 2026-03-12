@@ -25,50 +25,57 @@ def process_image():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
-    # Get parameters
     width = request.form.get('width', type=int)
     height = request.form.get('height', type=int)
     remove_bg = request.form.get('remove_bg') == 'true'
 
     try:
-        # Open image
-        img = Image.open(file.stream)
+        # Open image directly from stream
+        input_image = file.read()
+        img = Image.open(io.BytesIO(input_image))
         
-        # Convert to RGBA if we are removing background
-        if img.mode != 'RGBA':
-            img = img.convert('RGBA')
-
         # 1. Remove background if requested
         if remove_bg:
-            # We use rembg for high-quality background removal
-            img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format='PNG')
-            output_data = remove(img_byte_arr.getvalue())
-            img = Image.open(io.BytesIO(output_data))
+            print("Iniciando remoción de fondo con IA...")
+            # We use rembg. remove() handles the conversion and processing
+            try:
+                # Specify a local home for the model to avoid permission issues
+                os.environ['U2NET_HOME'] = os.path.join(os.getcwd(), '.u2net')
+                output_data = remove(input_image)
+                img = Image.open(io.BytesIO(output_data))
+                print("Fondo removido exitosamente.")
+            except Exception as e_rembg:
+                print(f"Error específico en rembg: {str(e_rembg)}")
+                return jsonify({'error': 'Error al procesar la IA de fondo. El servidor podría estar saturado.'}), 500
+
+        # Convert to RGBA for transparency support in output
+        if img.mode != 'RGBA':
+            img = img.convert('RGBA')
 
         # 2. Resize if dimensions are provided
         if width and height:
             img = img.resize((width, height), Image.Resampling.LANCZOS)
-        elif width:
-            # Maintain aspect ratio if only width is provided
-            w_percent = (width / float(img.size[0]))
-            h_size = int((float(img.size[1]) * float(w_percent)))
-            img = img.resize((width, h_size), Image.Resampling.LANCZOS)
-        elif height:
-            # Maintain aspect ratio if only height is provided
-            h_percent = (height / float(img.size[1]))
-            w_size = int((float(img.size[0]) * float(h_percent)))
-            img = img.resize((w_size, height), Image.Resampling.LANCZOS)
+        elif width or height:
+            # Maintain aspect ratio logic
+            w, h = img.size
+            if width:
+                h = int(h * (width / w))
+                w = width
+            else:
+                w = int(w * (height / h))
+                h = height
+            img = img.resize((w, h), Image.Resampling.LANCZOS)
 
         # Save result to a buffer
         img_io = io.BytesIO()
         img.save(img_io, 'PNG')
         img_io.seek(0)
         
-        return send_file(img_io, mimetype='image/png', as_attachment=True, download_name='processed_logo.png')
+        return send_file(img_io, mimetype='image/png', as_attachment=True, download_name='clarity_logo.png')
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error general de procesamiento: {str(e)}")
+        return jsonify({'error': f'Error interno: {str(e)}'}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
